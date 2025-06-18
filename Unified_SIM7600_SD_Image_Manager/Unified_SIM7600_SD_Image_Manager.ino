@@ -5,7 +5,7 @@
  * Proyecto:     Captura, recepción, almacenamiento y envío de imágenes con ESP32 y SIM7600
  * Autor:        Alejandro Rebolledo
  * Fecha:        2025-05-18
- *
+ * ///////////////REVISAR LA LINEA 187 ESTE CODIGO DE PRUEBAS GENERA UN ID ALEATORIO ELIMINAR DESPUES/////////////////////////////////////////
  * Descripción general:
  * Este sketch para ESP32 permite gestionar un flujo completo de imágenes entre
  * una Raspberry Pi y un servidor HTTP usando el módem SIM7600. El sistema funciona así:
@@ -184,7 +184,7 @@ void readHeader() {
   fileSize = filename.substring(sep + 1).toInt();
   Serial.printf("  File: %s  Size: %u bytes\n", nameOnly.c_str(), fileSize);
   // Construyo ruta única y abro SD
-  int randId = random(1, 5);//este random es para pruebas sacar para version final
+  int randId = random(1, 5); //OJO este random es para pruebas sacar para version final ONLY TEST
   PHOTO_PATH = "/" + String(randId) + "_" + nameOnly + ".jpg";
   outFile = SD.open(PHOTO_PATH, FILE_WRITE);
   if (!outFile) {
