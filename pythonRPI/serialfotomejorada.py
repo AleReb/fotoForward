@@ -111,7 +111,7 @@ def capture_raw_image() -> str:
     time.sleep(2)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    base = f"image_{timestamp}_raw"
+    base = f"{timestamp}_raw"
     path = unique_filename(base, "jpg", RAW_DIR)
     picam2.capture_file(path)
     picam2.close()
@@ -135,7 +135,7 @@ def enhance_image(raw_path: str) -> (Image.Image, str):
     enhanced = Image.fromarray(rgb)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    base = f"image_{timestamp}_enhanced"
+    base = f"{timestamp}_en"
     path = unique_filename(base, "jpg", ENHANCED_DIR)
     enhanced.save(path, format='JPEG', quality=95, optimize=True)
     print(f"Saved enhanced image: {path}")
