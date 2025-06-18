@@ -54,7 +54,6 @@
  */
 
 
-
 #define TINY_GSM_MODEM_SIM7600
 #define TINY_GSM_RX_BUFFER 2014  // Set RX buffer to 2Kb
 #define SerialAT Serial1
@@ -69,9 +68,11 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
+#define SD_CS_PIN 4
 
-// --- Nuevo flag global ------------------------------------------
-const int CHUNK_SIZE = 256;  // bytes por bloque
+// --- Global variables for image file --------------------
+// --- Transfer settings ---------------------------------------------------
+#define CHUNK_SIZE 1024
 int RECEIVE_TIMEOUT = 45000;  // este timeoyt va a ser nas grande cuando lo intente por segunda vez solo para preubas
 unsigned long lastByteTime = 0;  // To track last received byte time
 bool sendAfterReceive = false;
@@ -85,7 +86,7 @@ String PHOTO_PATH = "";  // Ensure PHOTO_PATH is always initialized
 bool hasRetried = false;
 
 //const char *WEBHOOK_URLOLD = "https://webhook.site/422dc1ed-dcb0-4114-9f5a-c73bf9e88423";  //pruebas exitoasas
-const char *WEBHOOK_URL = "https://hermit-harmless-wildly.ngrok-free.app/agregarImagen";  //pruebas exitoasas   //local https://b5be-179-189-216-39.ngrok-free.app/agregarImagen
+const char *WEBHOOK_URL = "https://hermit-harmless-wildly.ngrok-free.app/agregarImagen";  //pruebas exitoasas
 int ID = 1; //debiese ser el del dispositivo completo
 // --- Serial port pins -----------------------------------------------------
 #define MODEM_RX_PIN 17
@@ -113,27 +114,16 @@ RTC_DS3231 rtc;
 const char *APN = "gigsky-02";
 const char *GPRS_USER = "";
 const char *GPRS_PASS = "";
-
-
-// --- Global variables for image file --------------------
-// --- Transfer settings ---------------------------------------------------
-#define CHUNK_SIZE 1024
-#define SD_CS_PIN 4
-#define UART_BAUD 115200
-const unsigned long networkInterval = 60000 * 3;  // 45 s
-const unsigned long sendInterval = 60000 * 60;    // 100 min 6000000
-
-// --- State variables ------------------------------------------------------
-
-
 String networkOperator;
 String networkTech;
 String signalQuality;
 String registrationStatus;
-
 String httpReadData;
 String lastPostedID;
 
+// --- State variables ------------------------------------------------------
+const unsigned long networkInterval = 60000 * 3;  // 45 s
+const unsigned long sendInterval = 60000 * 60;    // 100 min 6000000
 unsigned long lastNetworkUpdate = 0;
 unsigned long lastDataSend = 0;
 
@@ -193,9 +183,8 @@ void readHeader() {
   String nameOnly = filename.substring(0, sep);
   fileSize = filename.substring(sep + 1).toInt();
   Serial.printf("  File: %s  Size: %u bytes\n", nameOnly.c_str(), fileSize);
-
   // Construyo ruta única y abro SD
-  int randId = random(1, 5);//este random es para pruebas sacar para 
+  int randId = random(1, 5);//este random es para pruebas sacar para version final
   PHOTO_PATH = "/" + String(randId) + "_" + nameOnly + ".jpg";
   outFile = SD.open(PHOTO_PATH, FILE_WRITE);
   if (!outFile) {
@@ -234,8 +223,6 @@ void processReception() {
       Serial.printf("\nTIMEOUT: %u/%u bytes\n", bytesReceived, fileSize);
       fileSerial.println("NACK_TIMEOUT");
       receiving = false;
-      SavedSDafter = true;
-
       if (!hasRetried) {
         hasRetried = true;
         delay(3000);
@@ -306,7 +293,6 @@ void handleSerialCommands() {
     Serial.println("TEST Auto request photo");
 
     fileSerial.println("foto");
-
     sendAfterReceive = true;  // envío tras recibir
 
   } else if (cmd.equalsIgnoreCase("r")) {
@@ -340,7 +326,6 @@ void sendImageWebhook() {
 
   Serial.println("Filename extraído: " + filename);
   Serial.println("Sensor ID extraído: " + sensorId);
-
 
   String fullUrl = String(WEBHOOK_URL) + "?id_sensor=" + String(sensorId) + "&filename=" + filename;
 
