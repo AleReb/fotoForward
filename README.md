@@ -5,7 +5,7 @@ The ESP32 stores each image on an SD card and then posts it to a server over LTE
 
 ## Components
 
-### Raspberry Pi (`capture_and_send.py`)
+### Raspberry Pi (`serialfotomejorada.py`)
 * Waits for `foto` on UART → captures a full‑res JPEG.
 * Enhances the picture (Unsharp Mask + CLAHE).
 * Saves RAW and enhanced versions.
