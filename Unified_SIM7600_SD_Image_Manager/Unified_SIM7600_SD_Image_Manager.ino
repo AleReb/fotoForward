@@ -85,8 +85,8 @@ int bytesReceived = 0;
 String PHOTO_PATH = "";  // Ensure PHOTO_PATH is always initialized
 bool hasRetried = false;
 
-//const char *WEBHOOK_URLOLD = "https://webhook.site/422dc1ed-dcb0-4114-9f5a-c73bf9e88423";  //pruebas exitoasas
-const char *WEBHOOK_URL = "https://hermit-harmless-wildly.ngrok-free.app/agregarImagen";  //pruebas exitoasas
+const char *WEBHOOK_URLOLD = "https://webhook.site/422dc1ed-dcb0-4114-9f5a-c73bf9e88423";  //pruebas exitoasas
+
 int ID = 1; //debiese ser el del dispositivo completo
 // --- Serial port pins -----------------------------------------------------
 #define MODEM_RX_PIN 17
