@@ -1,9 +1,20 @@
 import serial
 import threading
 import sys
+import glob
 
-SERIAL_PORT = '/dev/ttyAMA0'  # Or '/dev/ttyUSB0' if needed
 BAUD_RATE = 115200
+
+# Buscar puertos serie disponibles
+serial_ports = glob.glob('/dev/ttyS*') + glob.glob('/dev/ttyAMA*') + glob.glob('/dev/serial*') + glob.glob('/dev/ttyUSB*')
+print("Puertos serie encontrados:", serial_ports)
+
+if not serial_ports:
+    print("No se encontrÃ³ ningÃºn puerto serie disponible.")
+    sys.exit(1)
+
+SERIAL_PORT = serial_ports[0]  # Selecciona el primero encontrado
+print(f"Usando puerto serie: {SERIAL_PORT}")
 
 def read_serial(ser):
     while True:
@@ -29,13 +40,18 @@ try:
     print(f"Opened {SERIAL_PORT} at {BAUD_RATE} bps.")
 except Exception as e:
     print(f"Could not open the port: {e}")
-    exit(1)
+    sys.exit(1)
 
 read_thread = threading.Thread(target=read_serial, args=(ser,), daemon=True)
 read_thread.start()
 
 try:
     write_serial(ser)
+except KeyboardInterrupt:
+    print("\nExiting program.")
+finally:
+    ser.close()
+
 except KeyboardInterrupt:
     print("\nExiting program.")
 finally:
